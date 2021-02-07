@@ -6,6 +6,9 @@
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
 
 
+    <el-form-item label="姓名" prop="report">
+      <el-input v-model="dataForm.name" placeholder="专报成果"></el-input>
+    </el-form-item>
     <el-form-item label="专报成果" prop="report">
       <el-input v-model="dataForm.report" placeholder="专报成果"></el-input>
     </el-form-item>
@@ -49,6 +52,7 @@
         dataForm: {
           id: 0,
           userId: '',
+          name: '',
           createTime: '',
           status: '',
           report: '',
@@ -122,6 +126,7 @@
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
                 'userId': this.dataForm.userId,
+                'name': this.dataForm.name,
                 'createTime': this.dataForm.createTime,
                 'status': this.dataForm.status,
                 'report': this.dataForm.report,

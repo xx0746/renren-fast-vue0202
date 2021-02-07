@@ -5,10 +5,10 @@
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
     <el-form-item label="用户ID" prop="userId">
-      <el-input v-model="dataForm.userId" placeholder="用户ID" :disabled="true"></el-input>
+      <el-input v-model="dataForm.userId" placeholder="用户ID" :disabled="false"></el-input>
     </el-form-item>
       <el-form-item label="用户" prop="userId">
-        <el-input v-model="dataForm.userName" placeholder="用户" :disabled="true"></el-input>
+        <el-input v-model="dataForm.userName" placeholder="用户" :disabled="false"></el-input>
       </el-form-item>
 
     <el-form-item label="工作业绩" prop="workload">

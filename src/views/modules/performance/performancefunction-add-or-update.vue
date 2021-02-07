@@ -10,7 +10,9 @@
       <el-form-item label="用户" prop="userId">
         <el-input v-model="dataForm.userName" placeholder="用户" :disabled="true"></el-input>
       </el-form-item>
-
+      <el-form-item label="姓名">
+        <el-input v-model="dataForm.name" placeholder="用户ID"></el-input>
+      </el-form-item>
     <el-form-item label="工作业绩" prop="workload">
       <el-input v-model="dataForm.workload" placeholder="工作业绩"></el-input>
     </el-form-item>
@@ -52,6 +54,7 @@
         dataForm: {
           id: 0,
           userId: '',
+          name: '',
           userName: '',
           createTime: '',
           status: '',
@@ -125,6 +128,7 @@
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
                 'userId': this.dataForm.userId,
+                'name': this.dataForm.name,
                 'createTime': this.dataForm.createTime,
                 'status': this.dataForm.status,
                 'workload': this.dataForm.workload,

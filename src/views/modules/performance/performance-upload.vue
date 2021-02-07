@@ -30,8 +30,9 @@
       }
     },
     methods: {
-      init (id) {
-        this.url = this.$http.adornUrl(`/sys/performance/uploadExcel?token=${this.$cookie.get('token')}`)
+      init (actionName) {
+        // this.url = this.$http.adornUrl(`/sys/performance/uploadExcel?token=${this.$cookie.get('token')}`)
+        this.url = this.$http.adornUrl(`${actionName}&token=${this.$cookie.get('token')}`)
         this.visible = true
       },
       // 上传之前
@@ -40,13 +41,9 @@
       },
       // 上传成功
       successHandle (response, file, fileList) {
-        if (response && response.code === 0) {
           this.$emit('refreshDataList')
           this.$message.info('导入成功')
           this.visible = false
-        } else {
-          this.$message.error(response.msg)
-        }
       },
       // 弹窗关闭时
       closeHandle () {
