@@ -23,6 +23,8 @@
     <el-table
       :data="page.records"
       border
+      :default-sort = "{prop: 'sordId', order: 'ascending'}"
+
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column
@@ -35,6 +37,7 @@
         prop="sortId"
         header-align="center"
         align="center"
+        sortable
         label="序号">
       </el-table-column>
       <el-table-column
@@ -90,6 +93,8 @@
         prop="evaluationResult"
         header-align="center"
         align="center"
+        sortable
+        :sort-orders="['ascending','descending']"
         label="考核结果">
       </el-table-column>
       <el-table-column
