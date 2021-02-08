@@ -161,6 +161,7 @@
     data () {
       return {
         audit: {
+          // centID的中心 0:设计中心 1:金融中心 2:战略中心 3:技术中心 4:情报中心 5:质检中心
           centerId: 0,
           status: 0
         },
