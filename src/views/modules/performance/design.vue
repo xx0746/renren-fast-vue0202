@@ -216,7 +216,7 @@
         this.$http({
           url: this.$http.adornUrl('/audit/updateAudit'),
           method: 'post',
-          params: this.$http.adornParams( {
+          params: this.$http.adornParams({
             'centerId': this.audit.centerId,
             'status': this.audit.status
           })
