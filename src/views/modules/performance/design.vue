@@ -222,7 +222,11 @@
             'status': this.audit.status
           })
         }).then(({data}) => {
-          this.getStatus()
+          if (data.code === 403) {
+            this.$message.info('权限不足')
+          } else {
+            this.getStatus()
+          }
         })
       },
       uploadHandle () {
