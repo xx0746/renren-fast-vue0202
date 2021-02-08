@@ -18,6 +18,14 @@
         <el-button type="primary" @click="uploadHandle()">导入</el-button>
         <el-button type="primary" @click="uploadFile()">文件上传</el-button>
         <el-button type="primary" @click="downloadFile()">文件下载</el-button>
+        <el-switch
+          v-model="audit.status == 1"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          style="margin-left: 40px"
+          @change="updateAudit()"
+          >
+        </el-switch>
       </el-form-item>
     </el-form>
     <el-table
@@ -152,6 +160,10 @@
   export default {
     data () {
       return {
+        audit: {
+          centerId: 0,
+          status: 0
+        },
         dataForm: {
           key: ''
         },
@@ -189,6 +201,29 @@
       this.pageListWithCondition()
     },
     methods: {
+      getStatus () {
+        this.$http({
+          url: this.$http.adornUrl('/audit/getStatus'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'centerId': this.audit.centerId
+          })
+        }).then(({data}) => {
+          this.audit.status = data.status
+        })
+      },
+      updateAudit () {
+        this.$http({
+          url: this.$http.adornUrl('/audit/updateAudit'),
+          method: 'post',
+          params: this.$http.adornParams( {
+            'centerId': this.audit.centerId,
+            'status': this.audit.status
+          })
+        }).then(({data}) => {
+          this.getStatus()
+        })
+      },
       uploadHandle () {
         this.uploadVisible = true
         this.$nextTick(() => {
