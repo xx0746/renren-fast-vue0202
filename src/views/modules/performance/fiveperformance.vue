@@ -2,27 +2,28 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="condition.name" placeholder="参数名" clearable></el-input>
+        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="condition.createTime"
+          v-model="dataForm.date"
           type="month"
           value-format="yyyy-MM"
           placeholder="选择月">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="pageListWithCondition()">查询技术</el-button>
+        <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('sys:performance:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
         <el-button  type="primary" @click="exportExcel()">导出</el-button>
         <el-button type="primary" @click="uploadHandle()">导入</el-button>
-        <el-button type="primary" @click="uploadFile()">模板上传</el-button>
-        <el-button type="primary" @click="downloadFile()">模板下载</el-button>
       </el-form-item>
     </el-form>
     <el-table
-      :data="page.records"
+      :data="dataList"
       border
+      v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column
@@ -32,123 +33,78 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="sortId"
+        prop="userId"
         header-align="center"
         align="center"
-        label="序号">
+        width="80"
+        label="ID">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="username"
         header-align="center"
         align="center"
-        label="姓名">
+        label="用户名">
       </el-table-column>
       <el-table-column
-        prop="level"
+        prop="email"
         header-align="center"
         align="center"
-        label="层级">
-      </el-table-column>
-
-      <el-table-column
-        prop="wordLoad"
-        header-align="center"
-        align="center"
-        label="工作量">
+        label="邮箱">
       </el-table-column>
       <el-table-column
-        prop="advancedInnovation"
+        prop="mobile"
         header-align="center"
         align="center"
-        label="先进性与创新性">
+        label="手机号">
       </el-table-column>
       <el-table-column
-        prop="investigate"
+        prop="roleName"
         header-align="center"
         align="center"
-        label="调查研究">
+        label="部门">
       </el-table-column>
       <el-table-column
-        prop="progressController"
+        prop="status"
         header-align="center"
         align="center"
-        label="进度管控">
+        label="状态">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === 0" size="small" type="danger">禁用</el-tag>
+          <el-tag v-else size="small">正常</el-tag>
+        </template>
       </el-table-column>
       <el-table-column
-        prop="resultValue"
+        prop="createTime"
         header-align="center"
         align="center"
-        label="成果价值">
+        width="180"
+        label="创建时间">
       </el-table-column>
       <el-table-column
-        prop="knowledgeSkills"
+        prop="rankage"
         header-align="center"
         align="center"
-        label="岗位知识与技能">
+        width="180"
+        label="业绩排名">
       </el-table-column>
       <el-table-column
-        prop="communicationCollaboration"
+        prop="examine"
         header-align="center"
         align="center"
-        label="沟通协作能力">
+        width="180"
+        label="总分">
       </el-table-column>
       <el-table-column
-        prop="learningInnovation"
+        fixed="right"
         header-align="center"
         align="center"
-        label="学习创新能力">
+        width="150"
+        label="操作">
+        <template slot-scope="scope">
+          <el-button  type="text" size="small" @click="addOrUpdateHandle(scope.row.userId)" >查看</el-button>
+          <el-button  type="text" size="small" @click="addOrUpdateHandlezl(scope.row.userId)" >评分</el-button>
+        </template>
       </el-table-column>
-      <el-table-column
-        prop="jobResponsibility"
-        header-align="center"
-        align="center"
-        label="工作责任心">
-      </el-table-column>
-      <el-table-column
-        prop="workingDiscipline"
-        header-align="center"
-        align="center"
-        label="工作纪律">
-      </el-table-column>
-      <el-table-column
-        prop="evaluationResult"
-        header-align="center"
-        align="center"
-        label="考核结果">
-      </el-table-column>
-      <el-table-column
-        prop="evaluationLevel"
-        header-align="center"
-        align="center"
-        label="考核等级">
-      </el-table-column>
-      <el-table-column
-        prop="performance"
-        header-align="center"
-        align="center"
-        label="月度绩效(元)">
-      </el-table-column>
-      <el-table-column
-        prop="remark"
-        header-align="center"
-        align="center"
-        label="备注">
-      </el-table-column>
-      <!--      <el-table-column-->
-      <!--        fixed="right"-->
-      <!--        header-align="center"-->
-      <!--        align="center"-->
-      <!--        width="150"-->
-      <!--        label="操作">-->
-      <!--        <template slot-scope="scope">-->
-
-      <!--          <el-button  type="text" size="small" v-if="isAuth('sys:performance:shenhe')"  @click="shenhe(scope.row.id)">审核</el-button>-->
-      <!--          <el-button  type="text" size="small" v-if="isAuth('sys:performance:rlshenhe')"  @click="shenhe(scope.row.id)">人力审核</el-button>-->
-      <!--          <el-button  type="text" size="small" v-if="isAuth('sys:performance:yuanshenhe')"  @click="shenhe(scope.row.id)">院审核</el-button>-->
-      <!--          <el-button  type="text" size="small" v-if="!isAuth('sys:performance:shenhe') && !isAuth('sys:performance:rlshenhe') && !isAuth('sys:performance:yuanshenhe')"  @click="addOrUpdateHandle(scope.row.id)">修改</el-button>-->
-      <!--          <el-button type="text" size="small" v-if="!isAuth('sys:performance:shenhe') && !isAuth('sys:performance:rlshenhe') && !isAuth('sys:performance:yuanshenhe')"  @click="deleteHandle(scope.row.id)">删除</el-button>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
     </el-table>
     <el-pagination
       @size-change="sizeChangeHandle"
@@ -161,164 +117,133 @@
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-    <upload v-if="uploadVisible"  @refreshDataList="pageListWithCondition()" ref="upload" ></upload>
+    <add-or-updatezl v-if="addOrUpdateVisiblezl" ref="addOrUpdatezl" @refreshDataList="getDataList"></add-or-updatezl>
+    <upload v-if="uploadVisible"  @refreshDataList="getDataList" ref="upload" ></upload>
   </div>
 </template>
 
 <script>
-  import AddOrUpdate from './myperformance-add-or-update'
-  import Upload from './performance-upload'
-  export default {
-    data () {
-      return {
-        dataForm: {
-          key: ''
-        },
-        dataList: [],
-        pageIndex: 1,
-        pageSize: 10,
-        uploadVisible: false,
-        totalPage: 0,
-        dataListLoading: false,
-        dataListSelections: [],
-        addOrUpdateVisible: false,
-        page: {},
-        condition: {
-          name: '',
-          createTime: ''
+import AddOrUpdatezl from './fiveperformance-add-or-update-zl'
+import AddOrUpdate from './fiveperformance-add-or-update-table'
+import Upload from './performance-upload'
+
+export default {
+  data () {
+    return {
+      dataForm: {
+        key: '',
+        date: ''
+      },
+      uploadVisible: false,
+      addOrUpdateVisiblezl: false,
+      addOrUpdateVisible: false,
+      dataList: [],
+      pageIndex: 1,
+      pageSize: 10,
+      totalPage: 0,
+      dataListLoading: false,
+      dataListSelections: []
+    }
+  },
+  components: {
+    AddOrUpdate,
+    AddOrUpdatezl,
+    Upload
+  },
+  activated () {
+    this.getDataList()
+  },
+  methods: {
+    uploadHandle () {
+      this.uploadVisible = true
+      this.$nextTick(() => {
+        this.$refs.upload.init()
+      })
+    },
+    exportExcel () {
+      window.location.href = this.$http.adornUrl('/sys/performance/export?date=' + this.dataForm.date + '&token=' + this.$cookie.get('token'))
+    },
+    // 获取数据列表
+    getDataList () {
+      this.dataListLoading = true
+      this.$http({
+        url: this.$http.adornUrl('/sys/user/list'),
+        method: 'get',
+        params: this.$http.adornParams({
+          'page': this.pageIndex,
+          'limit': this.pageSize,
+          'key': this.dataForm.key,
+          'date': this.dataForm.date
+        })
+      }).then(({data}) => {
+        if (data && data.code === 0) {
+          this.dataList = data.page.list
+          this.totalPage = data.page.totalCount
+        } else {
+          this.dataList = []
+          this.totalPage = 0
         }
-      }
+        this.dataListLoading = false
+      })
     },
-    components: {
-      AddOrUpdate,
-      Upload
-    },
-    activated () {
+    // 每页数
+    sizeChangeHandle (val) {
+      this.pageSize = val
+      this.pageIndex = 1
       this.getDataList()
     },
-    created () {
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      if (month < 10) {
-        month = '0' + month
-      }
-      this.condition.createTime = year + '-' + month
-      console.log(this.condition.createTime)
-      this.pageListWithCondition()
+    // 当前页
+    currentChangeHandle (val) {
+      this.pageIndex = val
+      this.getDataList()
     },
-    methods: {
-      uploadHandle () {
-        this.uploadVisible = true
-        this.$nextTick(() => {
-          this.$refs.upload.init('/department/technology/uploadExcel?createTime=' + this.condition.createTime)
-        })
-      },
-      uploadFile () {
-        this.uploadVisible = true
-        this.$nextTick(() => {
-          this.$refs.upload.init('/file/uploadFile?fileName=科研中心员工绩效考核评分表-技术')
-        })
-      },
-      downloadFile () {
-        window.location.href = this.$http.adornUrl('/file/downloadFile?fileName=科研中心员工绩效考核评分表-技术' + '&token=' + this.$cookie.get('token'))
-      },
-      exportExcel () {
-        // window.location.href = this.$http.adornUrl('/sys/performance/export?date=' + this.dataForm.date + '&token=' + this.$cookie.get('token'))
-        window.location.href = this.$http.adornUrl('/department/technology/exportExcel?name=' + this.condition.name + '&createTime=' + this.condition.createTime + '&token=' + this.$cookie.get('token'))
-      },
-      pageListWithCondition () {
+    // 多选
+    selectionChangeHandle (val) {
+      this.dataListSelections = val
+    },
+    // 新增 / 修改
+    addOrUpdateHandle (id) {
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(id)
+      })
+    },
+    addOrUpdateHandlezl (id) {
+      this.addOrUpdateVisiblezl = true
+      this.$nextTick(() => {
+        this.$refs.addOrUpdatezl.init(id)
+      })
+    },
+    // 删除
+    deleteHandle (id) {
+      var ids = id ? [id] : this.dataListSelections.map(item => {
+        return item.id
+      })
+      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/department/technology/pageListWithCondition'),
+          url: this.$http.adornUrl('/sys/performance/delete'),
           method: 'post',
-          params: this.$http.adornParams({
-            'name': this.condition.name,
-            'createTime': this.condition.createTime,
-            'current': this.pageIndex,
-            'pageSize': this.pageSize
-          })
+          data: this.$http.adornData(ids, false)
         }).then(({data}) => {
-          this.page = data.page
-          this.totalPage = data.page.total
-          // if (data && data.code === 0) {
-          //   this.dataList = data.page.list
-          //   this.totalPage = data.page.totalCount
-          // } else {
-          //   this.dataList = []
-          //   this.totalPage = 0
-          // }
-          //this.dataListLoading = true
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
         })
-      },
-      shenhe (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
-      },
-      stateFormat (row,colum){
-        if (row.status === 1) {
-          return '待审核'
-        } else if (row.status === 2){
-          return '驳回'
-        }else if (row.status === 3){
-          return '审核通过'
-        }
-      },
-      // 获取数据列表
-
-      // 每页数
-      sizeChangeHandle (val) {
-        this.pageSize = val
-        this.pageIndex = 1
-        this.pageListWithCondition()
-      },
-      // 当前页
-      currentChangeHandle (val) {
-        this.pageIndex = val
-        this.pageListWithCondition()
-      },
-      // 多选
-      selectionChangeHandle (val) {
-        this.dataListSelections = val
-      },
-      // 新增 / 修改
-      addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
-      },
-      // 删除
-      deleteHandle (id) {
-        var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.id
-        })
-        this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/sys/performance/delete'),
-            method: 'post',
-            data: this.$http.adornData(ids, false)
-          }).then(({data}) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
-          })
-        })
-      }
+      })
     }
   }
+}
 </script>

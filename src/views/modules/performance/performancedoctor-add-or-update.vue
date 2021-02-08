@@ -6,9 +6,9 @@
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
 
 
-    <el-form-item label="姓名" prop="report">
-      <el-input v-model="dataForm.name" placeholder="专报成果"></el-input>
-    </el-form-item>
+      <el-form-item label="姓名" prop="name">
+        <el-input v-model="dataForm.name" placeholder="姓名"></el-input>
+      </el-form-item>
     <el-form-item label="专报成果" prop="report">
       <el-input v-model="dataForm.report" placeholder="专报成果"></el-input>
     </el-form-item>

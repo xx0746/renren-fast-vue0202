@@ -7,12 +7,13 @@
     <el-form-item label="用户ID" prop="userId">
       <el-input v-model="dataForm.userId" placeholder="用户ID" :disabled="true"></el-input>
     </el-form-item>
+      <el-form-item label="姓名" prop="name">
+        <el-input v-model="dataForm.name" placeholder="姓名" :disabled="true"></el-input>
+      </el-form-item>
       <el-form-item label="用户" prop="userId">
         <el-input v-model="dataForm.userName" placeholder="用户" :disabled="true"></el-input>
       </el-form-item>
-      <el-form-item label="姓名">
-        <el-input v-model="dataForm.name" placeholder="用户ID"></el-input>
-      </el-form-item>
+
     <el-form-item label="工作业绩" prop="workload">
       <el-input v-model="dataForm.workload" placeholder="工作业绩"></el-input>
     </el-form-item>
