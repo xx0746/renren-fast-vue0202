@@ -19,9 +19,7 @@
         <el-button type="primary" @click="uploadFile()">文件上传</el-button>
         <el-button type="primary" @click="downloadFile()">文件下载</el-button>
         <el-switch
-          v-if="audit.status ==1 "
           v-model="audit.status == 1"
-          active-text="已审核"
           active-color="#13ce66"
           inactive-color="#ff4949"
           style="margin-left: 40px"
@@ -29,20 +27,20 @@
         >
         </el-switch>
 
-        <el-switch
-          v-if="audit.status ==0 "
-          v-model="audit.status == 1"
-          active-text="未审核"
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-          style="margin-left: 40px"
-          @change="updateAudit()"
-          >
-        </el-switch>
+<!--        <el-switch-->
+<!--          v-if="audit.status ==0 "-->
+<!--          v-model="audit.status == 1"-->
+<!--          active-text="未审核"-->
+<!--          active-color="#13ce66"-->
+<!--          inactive-color="#ff4949"-->
+<!--          style="margin-left: 40px"-->
+<!--          @change="updateAudit()"-->
+<!--          >-->
+<!--        </el-switch>-->
 
 
-<!--        <span style="margin-left: 5px" v-if="audit.status == 1">已审核</span>-->
-<!--        <span style="margin-left: 5px" v-if="audit.status == 0">未审核</span>-->
+        <span style="margin-right: 5px" v-if="audit.status == 1">已审核</span>
+        <span style="margin-right: 5px" v-if="audit.status == 0">未审核</span>
       </el-form-item>
     </el-form>
     <el-table
@@ -217,6 +215,7 @@
       this.condition.createTime = year + '-' + month
       console.log(this.condition.createTime)
       this.pageListWithCondition()
+      this.getStatus()
     },
     methods: {
       getStatus () {
