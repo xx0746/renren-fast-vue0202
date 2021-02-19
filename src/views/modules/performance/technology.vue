@@ -18,6 +18,14 @@
         <el-button type="primary" @click="uploadHandle()">导入</el-button>
         <el-button type="primary" @click="uploadFile()">模板上传</el-button>
         <el-button type="primary" @click="downloadFile()">模板下载</el-button>
+        <el-switch
+          v-model="auditStatus"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          @change="auditStatusChanged(auditStatus)"
+        >
+        </el-switch>
+        <a>{{ auditStatusName }}</a>
       </el-form-item>
     </el-form>
     <el-table
@@ -166,159 +174,237 @@
 </template>
 
 <script>
-  import AddOrUpdate from './myperformance-add-or-update'
-  import Upload from './performance-upload'
-  export default {
-    data () {
-      return {
-        dataForm: {
-          key: ''
-        },
-        dataList: [],
-        pageIndex: 1,
-        pageSize: 10,
-        uploadVisible: false,
-        totalPage: 0,
-        dataListLoading: false,
-        dataListSelections: [],
-        addOrUpdateVisible: false,
-        page: {},
-        condition: {
-          name: '',
-          createTime: ''
-        }
-      }
-    },
-    components: {
-      AddOrUpdate,
-      Upload
-    },
-    activated () {
-      this.getDataList()
-    },
-    created () {
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      if (month < 10) {
-        month = '0' + month
-      }
-      this.condition.createTime = year + '-' + month
-      console.log(this.condition.createTime)
-      this.pageListWithCondition()
-    },
-    methods: {
-      uploadHandle () {
-        this.uploadVisible = true
-        this.$nextTick(() => {
-          this.$refs.upload.init('/department/technology/uploadExcel?createTime=' + this.condition.createTime)
-        })
+import AddOrUpdate from './myperformance-add-or-update'
+import Upload from './performance-upload'
+export default {
+  data () {
+    return {
+      dataForm: {
+        key: ''
       },
-      uploadFile () {
-        this.uploadVisible = true
-        this.$nextTick(() => {
-          this.$refs.upload.init('/file/uploadFile?fileName=科研中心员工绩效考核评分表-技术')
-        })
-      },
-      downloadFile () {
-        window.location.href = this.$http.adornUrl('/file/downloadFile?fileName=科研中心员工绩效考核评分表-技术' + '&token=' + this.$cookie.get('token'))
-      },
-      exportExcel () {
-        // window.location.href = this.$http.adornUrl('/sys/performance/export?date=' + this.dataForm.date + '&token=' + this.$cookie.get('token'))
-        window.location.href = this.$http.adornUrl('/department/technology/exportExcel?name=' + this.condition.name + '&createTime=' + this.condition.createTime + '&token=' + this.$cookie.get('token'))
-      },
-      pageListWithCondition () {
-        this.$http({
-          url: this.$http.adornUrl('/department/technology/pageListWithCondition'),
-          method: 'post',
-          params: this.$http.adornParams({
-            'name': this.condition.name,
-            'createTime': this.condition.createTime,
-            'current': this.pageIndex,
-            'pageSize': this.pageSize
-          })
-        }).then(({data}) => {
-          this.page = data.page
-          this.totalPage = data.page.total
-          // if (data && data.code === 0) {
-          //   this.dataList = data.page.list
-          //   this.totalPage = data.page.totalCount
-          // } else {
-          //   this.dataList = []
-          //   this.totalPage = 0
-          // }
-          //this.dataListLoading = true
-        })
-      },
-      shenhe (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
-      },
-      stateFormat (row,colum){
-        if (row.status === 1) {
-          return '待审核'
-        } else if (row.status === 2){
-          return '驳回'
-        }else if (row.status === 3){
-          return '审核通过'
-        }
-      },
-      // 获取数据列表
-
-      // 每页数
-      sizeChangeHandle (val) {
-        this.pageSize = val
-        this.pageIndex = 1
-        this.pageListWithCondition()
-      },
-      // 当前页
-      currentChangeHandle (val) {
-        this.pageIndex = val
-        this.pageListWithCondition()
-      },
-      // 多选
-      selectionChangeHandle (val) {
-        this.dataListSelections = val
-      },
-      // 新增 / 修改
-      addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
-      },
-      // 删除
-      deleteHandle (id) {
-        var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.id
-        })
-        this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/sys/performance/delete'),
-            method: 'post',
-            data: this.$http.adornData(ids, false)
-          }).then(({data}) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
-          })
-        })
+      dataList: [],
+      pageIndex: 1,
+      pageSize: 10,
+      uploadVisible: false,
+      totalPage: 0,
+      dataListLoading: false,
+      dataListSelections: [],
+      addOrUpdateVisible: false,
+      //审核状态
+      auditStatus: true,
+      auditStatusName: "",
+      page: {},
+      condition: {
+        name: '',
+        createTime: ''
       }
     }
+  },
+  components: {
+    AddOrUpdate,
+    Upload
+  },
+  activated () {
+    this.getDataList()
+  },
+  created () {
+    let date = new Date()
+    let year = date.getFullYear()
+    let month = date.getMonth() + 1
+    if (month < 10) {
+      month = '0' + month
+    }
+    this.condition.createTime = year + '-' + month
+    console.log(this.condition.createTime)
+    this.pageListWithCondition()
+    this.getAuditStatus();
+  },
+  methods: {
+    uploadHandle () {
+      this.uploadVisible = true
+      this.$nextTick(() => {
+        this.$refs.upload.init('/department/technology/uploadExcel?createTime=' + this.condition.createTime)
+      })
+    },
+    uploadFile () {
+      this.uploadVisible = true
+      this.$nextTick(() => {
+        this.$refs.upload.init('/file/uploadFile?fileName=科研中心员工绩效考核评分表-技术')
+      })
+    },
+    downloadFile () {
+      window.location.href = this.$http.adornUrl('/file/downloadFile?fileName=科研中心员工绩效考核评分表-技术' + '&token=' + this.$cookie.get('token'))
+    },
+    exportExcel () {
+      // window.location.href = this.$http.adornUrl('/sys/performance/export?date=' + this.dataForm.date + '&token=' + this.$cookie.get('token'))
+      window.location.href = this.$http.adornUrl('/department/technology/exportExcel?name=' + this.condition.name + '&createTime=' + this.condition.createTime + '&token=' + this.$cookie.get('token'))
+    },
+    pageListWithCondition () {
+      this.$http({
+        url: this.$http.adornUrl('/department/technology/pageListWithCondition'),
+        method: 'post',
+        params: this.$http.adornParams({
+          'name': this.condition.name,
+          'createTime': this.condition.createTime,
+          'current': this.pageIndex,
+          'pageSize': this.pageSize
+        })
+      }).then(({data}) => {
+        this.page = data.page
+        this.totalPage = data.page.total
+        // if (data && data.code === 0) {
+        //   this.dataList = data.page.list
+        //   this.totalPage = data.page.totalCount
+        // } else {
+        //   this.dataList = []
+        //   this.totalPage = 0
+        // }
+        //this.dataListLoading = true
+      })
+    },
+    shenhe (id) {
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(id)
+      })
+    },
+    stateFormat (row,colum){
+      if (row.status === 1) {
+        return '待审核'
+      } else if (row.status === 2){
+        return '驳回'
+      }else if (row.status === 3){
+        return '审核通过'
+      }
+    },
+    // 获取数据列表
+
+    // 每页数
+    sizeChangeHandle (val) {
+      this.pageSize = val
+      this.pageIndex = 1
+      this.pageListWithCondition()
+    },
+    // 当前页
+    currentChangeHandle (val) {
+      this.pageIndex = val
+      this.pageListWithCondition()
+    },
+    // 多选
+    selectionChangeHandle (val) {
+      this.dataListSelections = val
+    },
+    // 新增 / 修改
+    addOrUpdateHandle (id) {
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(id)
+      })
+    },
+
+    //get audit status
+
+    getAuditStatus() {
+      var that = this;
+      //var newStatus  = this.auditStatus
+      this.$http({
+        url: this.$http.adornUrl("/audit/getStatus"),
+        method: "get",
+        params: this.$http.adornParams({
+          centerId: 3,
+        }),
+      }).then(({ data }) => {
+
+        console.log(data)
+
+        if(data.code !== 0){
+          return this.$message.error('error');
+        }
+
+        if(data.status == 0){
+          console.log(that);
+          console.log('1234', data.status, that.auditStatus)
+          that.auditStatus = false
+          that.auditStatusName = '未审核'
+          console.log(that.data.auditStatus)
+        }else{
+          console.log('123', data.status, that.data)
+          that.auditStatus = true
+          that.auditStatusName = '已审核'
+          console.log(that.data.auditStatus)
+        }
+
+
+      });
+
+    },
+
+    auditStatusChanged(auditStatus) {
+      var that = this
+      //后端问题，传0，后台存1
+      var status = !auditStatus + 0;
+      if (auditStatus) {
+        this.auditStatusName = "已审核";
+      } else {
+        this.auditStatusName = "未审核";
+      }
+      // console.log(status);
+      this.$http({
+        url: this.$http.adornUrl("/audit/updateAudit"),
+        method: "post",
+        params: this.$http.adornParams({
+          centerId: 3,
+          status: status,
+        }),
+      }).then(({ data }) => {
+        //  console.log(data);
+        if (data.code !== 0) {
+          return this.$message.error(data.msg);
+          that.auditStatus != auditStatus
+        }
+        if (auditStatus) {
+          return this.$message.success("审核完成");
+        }
+        return this.$message.success("取消审核");
+      });
+    },
+
+    // 删除
+    deleteHandle (id) {
+      var ids = id ? [id] : this.dataListSelections.map(item => {
+        return item.id
+      })
+      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/performance/delete'),
+          method: 'post',
+          data: this.$http.adornData(ids, false)
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      })
+    }
   }
+}
 </script>
+<style scoped>
+.el-switch{
+  margin-left: 20px;
+}
+
+</style>

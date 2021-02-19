@@ -1,4 +1,4 @@
-<template>
+ <template>
   <el-dialog
     title="修改密码"
     :visible.sync="visible"
