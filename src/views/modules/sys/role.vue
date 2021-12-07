@@ -2,7 +2,7 @@
   <div class="mod-role">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.roleName" placeholder="部门名称" clearable></el-input>
+        <el-input v-model="dataForm.roleName" placeholder="角色名称" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -33,7 +33,7 @@
         prop="roleName"
         header-align="center"
         align="center"
-        label="部门名称">
+        label="角色名称">
       </el-table-column>
       <el-table-column
         prop="remark"

@@ -36,7 +36,11 @@ const mainRoutes = {
     { path: '/home', component: _import('common/home'), name: 'home', meta: { title: '首页' } },
     { path: '/theme', component: _import('common/theme'), name: 'theme', meta: { title: '主题' } },
     { path: '/demo-echarts', component: _import('demo/echarts'), name: 'demo-echarts', meta: { title: '绩效统计', isTab: true } },
-    { path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } }
+    { path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } },
+    // eslint-disable-next-line standard/object-curly-even-spacing
+    { path: '/personList', component: _import('modules/ut/personList'), name: 'personList', hidden: true, meta: {title: '人员明细', isTab: true}},
+    // eslint-disable-next-line standard/object-curly-even-spacing
+    { path: '/writeList', component: _import('modules/ut/writeList'), name: 'writeList', hidden: true, meta: {title: '工时明细', isTab: true}}
   ],
   beforeEnter (to, from, next) {
     let token = Vue.cookie.get('token')

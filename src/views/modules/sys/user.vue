@@ -28,32 +28,43 @@
         prop="userId"
         header-align="center"
         align="center"
-        width="80"
+        width="50"
         label="ID">
       </el-table-column>
       <el-table-column
         prop="username"
         header-align="center"
         align="center"
+        width="80"
         label="用户名">
       </el-table-column>
-      <el-table-column
-        prop="email"
-        header-align="center"
-        align="center"
-        label="邮箱">
-      </el-table-column>
+
       <el-table-column
         prop="mobile"
         header-align="center"
         align="center"
+        width="110"
         label="手机号">
       </el-table-column>
       <el-table-column
         prop="roleName"
         header-align="center"
         align="center"
+        width="150"
+        label="角色">
+      </el-table-column>
+      <el-table-column
+        prop="departmentId"
+        header-align="center"
+        align="center"
+        :formatter="formatterDepartment"
         label="部门">
+      </el-table-column>
+      <el-table-column
+        prop="level"
+        header-align="center"
+        align="center"
+        label="级别">
       </el-table-column>
       <el-table-column
         prop="status"
@@ -66,17 +77,23 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="email"
+        header-align="center"
+        align="center"
+        label="邮箱">
+      </el-table-column>
+      <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
-        width="180"
+        width="150"
         label="创建时间">
       </el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
         align="center"
-        width="150"
+        width="90"
         label="操作">
         <template slot-scope="scope">
           <el-button v-if="isAuth('sys:user:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.userId)">修改</el-button>
@@ -95,7 +112,7 @@
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-    <upload v-if="uploadVisible" ref="upload" ></upload>
+    <upload v-if="uploadVisible" ref="upload"  @refreshDataList="getDataList"></upload>
 
   </div>
 </template>
@@ -109,6 +126,7 @@
         dataForm: {
           userName: ''
         },
+        departments: [],
         uploadVisible: false,
         dataList: [],
         pageIndex: 1,
@@ -124,9 +142,40 @@
       Upload
     },
     activated () {
+      this.getDepartments()
       this.getDataList()
     },
     methods: {
+      getDepartments () {
+        this.$http({
+          url: this.$http.adornUrl('/sys/department/list'),
+          method: 'post',
+          data: this.$http.adornParams({
+            'page': 1,
+            'limit': 100
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.departments = data.dataList
+          }
+        })
+      },
+      formatterDepartment (row, column) {
+        // 获取单元格数据
+        let data = row[column.property]
+        if (data === 'undefined' || data === '') {
+          return ''
+        }
+        // eslint-disable-next-line no-unused-vars
+        let returnStr = ''
+        this.departments.some((item, i) => {
+          if (item.id === data) {
+            returnStr = item.departmentName
+            return true
+          }
+        })
+        return returnStr
+      },
       uploadHandle () {
         this.uploadVisible = true
         this.$nextTick(() => {

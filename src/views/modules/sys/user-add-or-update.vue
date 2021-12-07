@@ -25,7 +25,17 @@
       <el-form-item label="层级" prop="level">
         <el-input v-model="dataForm.level" placeholder="层级"></el-input>
       </el-form-item>
-      <el-form-item label="部门" size="mini" prop="roleIdList">
+      <el-form-item label="部门" prop="level">
+      <el-select v-model="dataForm.departmentId" filterable placeholder="请选择">
+        <el-option
+          v-for="item in departments"
+          :key="item.id"
+          :label="item.departmentName"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      </el-form-item>
+      <el-form-item label="角色" size="mini" prop="roleIdList">
         <el-checkbox-group v-model="dataForm.roleIdList">
           <el-checkbox v-for="role in roleList" :key="role.roleId" :label="role.roleId">{{ role.roleName }}</el-checkbox>
         </el-checkbox-group>
@@ -81,8 +91,10 @@
       return {
         visible: false,
         roleList: [],
+        departments: [],
         dataForm: {
           id: 0,
+          departmentId: '',
           userName: '',
           password: '',
           comfirmPassword: '',
@@ -117,6 +129,8 @@
     },
     methods: {
       init (id) {
+        this.dataForm.departmentId = ''
+        this.getDepartments()
         this.dataForm.id = id || 0
         this.$http({
           url: this.$http.adornUrl('/sys/role/select'),
@@ -145,8 +159,23 @@
                 this.dataForm.status = data.user.status
                 this.dataForm.staff = data.user.staff
                 this.dataForm.level = data.user.level
+                this.dataForm.departmentId = data.user.departmentId
               }
             })
+          }
+        })
+      },
+      getDepartments () {
+        this.$http({
+          url: this.$http.adornUrl('/sys/department/list'),
+          method: 'post',
+          data: this.$http.adornParams({
+            'page': 1,
+            'limit': 100
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.departments = data.dataList
           }
         })
       },
@@ -167,6 +196,7 @@
                 'email': this.dataForm.email,
                 'mobile': this.dataForm.mobile,
                 'status': this.dataForm.status,
+                'departmentId': this.dataForm.departmentId,
                 'roleIdList': this.dataForm.roleIdList
               })
             }).then(({data}) => {

@@ -4,8 +4,8 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-      <el-form-item label="部门名称" prop="roleName">
-        <el-input v-model="dataForm.roleName" placeholder="部门名称"></el-input>
+      <el-form-item label="角色名称" prop="roleName">
+        <el-input v-model="dataForm.roleName" placeholder="角色名称"></el-input>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input v-model="dataForm.remark" placeholder="备注"></el-input>
