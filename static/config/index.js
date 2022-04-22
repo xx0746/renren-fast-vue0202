@@ -6,7 +6,7 @@
 
   // api接口请求地址
   // window.SITE_CONFIG['baseUrl'] = 'http://1n60963u04.iask.in:17194/performance-project'
-  window.SITE_CONFIG['baseUrl'] = 'http://127.0.0.1:8081/performance-project'
+  window.SITE_CONFIG['baseUrl'] = 'http://192.168.5.173:8082/performance-project'
   // cdn地址 = 域名 + 版本号
   window.SITE_CONFIG['domain'] = './' // 域名
   window.SITE_CONFIG['version'] = ''   // 版本号(年月日时分)
