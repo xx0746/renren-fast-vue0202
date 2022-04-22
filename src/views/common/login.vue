@@ -3,7 +3,7 @@
     <div class="site-content__wrapper">
       <div class="site-content">
         <div class="brand-info">
-          <h2 class="brand-info__text">绩效考核系统</h2>
+          <h1 class="brand-info__text">邮政科学研究规划院UT管理系统</h1>
 <!--          <p class="brand-info__intro">renren-fast-vue基于vue、element-ui构建开发，实现renren-fast后台管理前端功能，提供一套更优的前端解决方案。</p>-->
         </div>
         <div class="login-main">

@@ -40,7 +40,8 @@ const mainRoutes = {
     // eslint-disable-next-line standard/object-curly-even-spacing
     { path: '/personList', component: _import('modules/ut/personList'), name: 'personList', hidden: true, meta: {title: '人员明细', isTab: true}},
     // eslint-disable-next-line standard/object-curly-even-spacing
-    { path: '/writeList', component: _import('modules/ut/writeList'), name: 'writeList', hidden: true, meta: {title: '工时明细', isTab: true}}
+    { path: '/writeList', component: _import('modules/ut/writeList'), name: 'writeList', hidden: true, meta: {title: '工时明细', isTab: true}},
+    { path: '/writeDayList', component: _import('modules/ut/writeDayList'), name: 'writeDayList', hidden: true, meta: {title: '工时明细(日)', isTab: true}}
   ],
   beforeEnter (to, from, next) {
     let token = Vue.cookie.get('token')

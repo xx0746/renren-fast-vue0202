@@ -101,7 +101,7 @@ export default {
     },
     getDepartments () {
       this.$http({
-        url: this.$http.adornUrl('/dataStatistics/queryDepartmentList'),
+        url: this.$http.adornUrl('/sys/department/list'),
         method: 'post',
         data: this.$http.adornParams({
           'page': 1,

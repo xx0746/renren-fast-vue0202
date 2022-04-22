@@ -18,9 +18,10 @@
       <el-table-column label="完成时间" prop="endTime"  :formatter="formatDate" width="95" header-align="center" align="center"></el-table-column>
       <el-table-column label="立项依据" prop="according" header-align="center" align="center"></el-table-column>
       <el-table-column label="项目级别" prop="level" header-align="center" align="center"></el-table-column>
-      <el-table-column label="操作" fixed="right" header-align="center" align="center" width="50">
+      <el-table-column label="操作" fixed="right" header-align="center" align="center" width="120">
         <template slot-scope="scope">
-        <el-button  type="text" size="small" @click="updateHandle(scope.row.projectId,scope.row.code,scope.row.name)">填报</el-button>
+          <el-button  type="text" size="small" @click="updateHandle(scope.row.projectId,scope.row.code,scope.row.name)">填周报</el-button>
+          <el-button  type="text" size="small" @click="editDayUtWorkWrite(scope.row.projectId,scope.row.code,scope.row.name)">填日报</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -110,6 +111,10 @@
       // 填报
       updateHandle (projectId, projectCode, projectName) {
         this.$router.push({'name': 'writeList', params: {projectId: projectId, projectCode: projectCode, projectName: projectName}})
+      },
+      // 填写日报
+      editDayUtWorkWrite (projectId, projectCode, projectName) {
+        this.$router.push({'name': 'writeDayList', params: {projectId: projectId, projectCode: projectCode, projectName: projectName}})
       }
     }
   }

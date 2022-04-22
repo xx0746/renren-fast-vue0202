@@ -25,7 +25,7 @@
       <el-table-column label="部门" prop="departmentName" header-align="center" align="center"></el-table-column>
       <el-table-column label="姓名" prop="username" header-align="center" align="center"></el-table-column>
      <!-- <el-table-column  label="分数" prop="score" header-align="center" align="center"></el-table-column>-->
-      <el-table-column  label="分数" header-align="center" align="center">
+      <el-table-column  label="考核评价系数" header-align="center" align="center">
         <template slot-scope="scope">
           <el-input-number v-if="!disabledflag" v-model="scope.row.score" :precision="2" :step="1" >
           </el-input-number>
